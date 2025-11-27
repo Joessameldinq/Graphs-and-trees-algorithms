@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdbool.h>
+
 #define NUM_OF_VERTICES 5
 
-//Adjancy matrix
-
-
+//Adjacency matrix
 int graph[NUM_OF_VERTICES][NUM_OF_VERTICES] = {
     {0, 1, 0, 1, 0},
     {1, 0, 1, 1, 1},
@@ -15,43 +14,44 @@ int graph[NUM_OF_VERTICES][NUM_OF_VERTICES] = {
 
 int path[NUM_OF_VERTICES];
 
-//We will use back tracking algorithm
 // Check if vertex v can be added at position pos
-bool isSave(int v,int pos)
+bool isSafe(int v, int pos)
 {
-    if(!graph[path[pos-1]][v])
+    // Must be adjacent to previous vertex
+    if (!graph[path[pos - 1]][v])
         return false;
-    
-    //Vertix must not be used in the path
-    for(int i = 0 ; i  < pos ;i++)
-        if(path[i] == v)
+
+    // Must not already be in path
+    for (int i = 0; i < pos; i++)
+        if (path[i] == v)
             return false;
 
     return true;
 }
 
-//Recursive backtracking algorithm
-
+// Recursive backtracking algorithm
 bool hamCycleUtility(int pos)
 {
-    if(pos == NUM_OF_VERTICES)
+    if (pos == NUM_OF_VERTICES)
     {
-        if(graph[path[pos-1]][path[0]])
+        // Check last <-> first connection
+        if (graph[path[pos - 1]][path[0]])
             return true;
-        else    
+        else
             return false;
-
     }
-    //Try vertice from 1 to V-1
-    for(int v = 1 ; v < NUM_OF_VERTICES ; v++)
+
+    // Try vertices from 1 to V-1 (0 is fixed at start)
+    for (int v = 1; v < NUM_OF_VERTICES; v++)
     {
-        if(isSave(v,pos))
+        if (isSafe(v, pos))
         {
             path[pos] = v;
-            if(hamCycleUtility(pos+1))
+
+            if (hamCycleUtility(pos + 1))
                 return true;
-            
-            path[pos] = -1; //Back Tracking
+
+            path[pos] = -1; // Backtrack
         }
     }
     return false;
@@ -59,23 +59,29 @@ bool hamCycleUtility(int pos)
 
 bool hamCycle()
 {
-    for(int i = 0 ; i < NUM_OF_VERTICES ;i++)
+    // Initialize path to -1
+    for (int i = 0; i < NUM_OF_VERTICES; i++)
         path[i] = -1;
 
+    // Start at vertex 0
     path[0] = 0;
 
-    if(hamCycle(1))
+    // FIXED: call hamCycleUtility, NOT hamCycle()
+    if (hamCycleUtility(1))
     {
-        printf("Hamlitonian Cycle was found");
-        for(int i = 0 ; i <NUM_OF_VERTICES;i++)
-            printf("%d",path[i]);
-        printf("%d\n",path[0]); // Close the cycle
+        printf("Hamiltonian Cycle Found: ");
+        for (int i = 0; i < NUM_OF_VERTICES; i++)
+            printf("%d ", path[i]);
+        printf("%d\n", path[0]); // Close the cycle
         return true;
     }
-    printf("NO Hamiltonian cycle \n");
+
+    printf("No Hamiltonian Cycle\n");
     return false;
 }
-int main() {
+
+int main()
+{
     hamCycle();
     return 0;
 }
