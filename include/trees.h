@@ -5,6 +5,7 @@
 
 typedef struct node {
     int value;
+    int key;
     struct node *left_child;
     struct node *right_child;
 } root;
